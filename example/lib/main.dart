@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:fluent/fluent.dart';
 
 void main() {
@@ -46,7 +44,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return FluentApp(
       home: Scaffold(
-        appBar: AppBar(
+        appBar: FluentAppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(

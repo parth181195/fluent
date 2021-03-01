@@ -1,5 +1,12 @@
+import 'package:fluent/src/arc.dart';
+import 'package:fluent/src/colors.dart';
+import 'package:fluent/src/floating_action_button.dart';
+import 'package:fluent/src/icons.dart';
+import 'package:fluent/src/material_localizations.dart';
+import 'package:fluent/src/page.dart';
+import 'package:fluent/src/scaffold.dart';
+import 'package:fluent/src/theme.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:ui' as ui;
 
@@ -251,7 +258,7 @@ class _FluentAppState extends State<FluentApp> {
   @override
   void initState() {
     super.initState();
-    _heroController = MaterialApp.createMaterialHeroController();
+    _heroController = FluentApp.createMaterialHeroController();
   }
 
   // Combine the Localizations for Material with the ones contributed
