@@ -1,15 +1,12 @@
-# fluent
+# Fluent
 
-A new Flutter project.
+![flutter_fluent.jpeg](./assets/flutter_fluent.jpeg)
 
-## Getting Started
+Flutter implementation for microsoft fluent ui for now we are only targeting (ios and android we are planning for desktop elements but once desktop embedding is released in production same can be said for web as well)
 
-This project is a starting point for a Flutter
-[plug-in package](https://flutter.dev/developing-packages/),
-a specialized package that includes platform-specific implementation code for
-Android and/or iOS.
+android control reference : https://developer.microsoft.com/en-us/fluentui#/controls/android
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+ios control reference : https://developer.microsoft.com/en-us/fluentui#/controls/ios
+
+this project is still in active development, and it's not ready for alpha  so for some cases it might not stable, and it can also receive braking changes frequently
 
