@@ -43,12 +43,18 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return FluentApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
+        drawer: Drawer(),
         appBar: FluentAppBar(
-          title: const Text('Plugin example app'),
+          openDrawerOnLeadingTap: false,
+          leading: Icon(
+            Icons.menu,
+          ),
+          title: const Text('Fluent UI Example'),
         ),
         body: Center(
-          child: Text('Running on'),
+          child: Text('Fluent Appbar'),
         ),
       ),
     );
