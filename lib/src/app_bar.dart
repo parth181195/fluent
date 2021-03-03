@@ -26,7 +26,7 @@ import 'theme.dart';
 
 const double _kLeadingWidth = kToolbarHeight; // So the leading button is square.
 const double _kMaxTitleTextScaleFactor =
-    1.34; // TODO(perc): Add link to Material spec when available, https://github.com/flutter/flutter/issues/58769.
+1.34; // TODO(perc): Add link to Material spec when available, https://github.com/flutter/flutter/issues/58769.
 
 // Bottom justify the toolbarHeight child which may overflow the top.
 class _ToolbarContainerLayout extends SingleChildLayoutDelegate {
@@ -737,8 +737,8 @@ class _FluentAppBarState extends State<FluentAppBar> {
     final Color backgroundColor = backwardsCompatibility
         ? widget.backgroundColor ?? appBarTheme.backgroundColor ?? theme.primaryColor
         : widget.backgroundColor ??
-            appBarTheme.backgroundColor ??
-            (colorScheme.brightness == Brightness.dark ? colorScheme.surface : colorScheme.primary);
+        appBarTheme.backgroundColor ??
+        (colorScheme.brightness == Brightness.dark ? colorScheme.surface : colorScheme.primary);
 
     final Color foregroundColor = widget.foregroundColor ??
         appBarTheme.foregroundColor ??
@@ -962,8 +962,8 @@ class _FluentAppBarState extends State<FluentAppBar> {
     final SystemUiOverlayStyle overlayStyle = backwardsCompatibility
         ? (overlayStyleBrightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark)
         : widget.systemOverlayStyle ??
-            appBarTheme.systemOverlayStyle ??
-            (colorScheme.brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
+        appBarTheme.systemOverlayStyle ??
+        (colorScheme.brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark);
 
     return Semantics(
       container: true,
@@ -1071,8 +1071,8 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     required this.systemOverlayStyle,
   })   : assert(primary || topPadding == 0.0),
         assert(
-          !floating || (snapConfiguration == null && showOnScreenConfiguration == null) || vsync != null,
-          'vsync cannot be null when snapConfiguration or showOnScreenConfiguration is not null, and floating is true',
+        !floating || (snapConfiguration == null && showOnScreenConfiguration == null) || vsync != null,
+        'vsync cannot be null when snapConfiguration or showOnScreenConfiguration is not null, and floating is true',
         ),
         _bottomHeight = bottom?.preferredSize.height ?? 0.0;
 
@@ -1135,7 +1135,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
 
     final bool isPinnedWithOpacityFade = pinned && floating && bottom != null && extraToolbarHeight == 0.0;
     final double toolbarOpacity =
-        !pinned || isPinnedWithOpacityFade ? (visibleToolbarHeight / (toolbarHeight ?? kToolbarHeight)).clamp(0.0, 1.0) : 1.0;
+    !pinned || isPinnedWithOpacityFade ? (visibleToolbarHeight / (toolbarHeight ?? kToolbarHeight)).clamp(0.0, 1.0) : 1.0;
 
     final Widget appBar = FlexibleSpaceBar.createSettings(
       minExtent: minExtent,
@@ -1462,7 +1462,7 @@ class SliverAppBar extends StatefulWidget {
         assert(floating || !snap, 'The "snap" argument only makes sense for floating app bars.'),
         assert(stretchTriggerOffset > 0.0),
         assert(collapsedHeight == null || collapsedHeight >= toolbarHeight,
-            'The "collapsedHeight" argument has to be larger than or equal to [toolbarHeight].'),
+        'The "collapsedHeight" argument has to be larger than or equal to [toolbarHeight].'),
         super(key: key);
 
   /// {@macro flutter.material.appbar.leading}
@@ -1739,7 +1739,7 @@ class _SliverAppBarState extends State<SliverAppBar> with TickerProviderStateMix
     }
 
     _showOnScreenConfiguration =
-        widget.floating & widget.snap ? const PersistentHeaderShowOnScreenConfiguration(minShowOnScreenExtent: double.infinity) : null;
+    widget.floating & widget.snap ? const PersistentHeaderShowOnScreenConfiguration(minShowOnScreenExtent: double.infinity) : null;
   }
 
   void _updateStretchConfiguration() {
