@@ -54,7 +54,11 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Fluent UI Example'),
         ),
         body: Center(
-          child: Text('Fluent Appbar'),
+          child: FluentCircleAvatar(
+            initials: 'Parth',
+            getBackgroundFromInitials: true,
+            userStatus: UserAvatarStatus.away,
+          ),
         ),
       ),
     );

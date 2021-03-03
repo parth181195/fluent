@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import 'package:flutter/widgets.dart';
+import 'dart:math' as math;
 
+import 'colors.dart';
 import 'constants.dart';
 import 'theme.dart';
 import 'theme_data.dart';
@@ -55,12 +57,18 @@ import 'theme_data.dart';
 /// See also:
 ///
 ///  * [Chip], for representing users or concepts in long form.
-///  * [ListTile], which can combine an icon (such as a [CircleAvatar]) with
+///  * [ListTile], which can combine an icon (such as a [FluentCircleAvatar]) with
 ///    some text for a fixed height list entry.
 ///  * <https://material.io/design/components/chips.html#input-chips>
-class CircleAvatar extends StatelessWidget {
+///
+///
+
+double _kStatusIndicatorHeight = 15;
+double _kStatusIndicatorBorderWidth = 2;
+
+class FluentCircleAvatar extends StatelessWidget {
   /// Creates a circle that represents a user.
-  const CircleAvatar({
+  const FluentCircleAvatar({
     Key? key,
     this.child,
     this.backgroundColor,
@@ -70,16 +78,19 @@ class CircleAvatar extends StatelessWidget {
     this.onForegroundImageError,
     this.foregroundColor,
     this.radius,
+    this.initials = '',
+    this.getBackgroundFromInitials = false,
+    this.userStatus,
     this.minRadius,
     this.maxRadius,
-  }) : assert(radius == null || (minRadius == null && maxRadius == null)),
-       assert(backgroundImage != null || onBackgroundImageError == null),
-       assert(foregroundImage != null || onForegroundImageError== null),
-       super(key: key);
+  })  : assert(radius == null || (minRadius == null && maxRadius == null)),
+        assert(backgroundImage != null || onBackgroundImageError == null),
+        assert(foregroundImage != null || onForegroundImageError == null),
+        super(key: key);
 
   /// The widget below this widget in the tree.
   ///
-  /// Typically a [Text] widget. If the [CircleAvatar] is to have an image, use
+  /// Typically a [Text] widget. If the [FluentCircleAvatar] is to have an image, use
   /// [backgroundImage] instead.
   final Widget? child;
 
@@ -105,7 +116,7 @@ class CircleAvatar extends StatelessWidget {
   ///
   /// Typically used as a fallback image for [foregroundImage].
   ///
-  /// If the [CircleAvatar] is to have the user's initials, use [child] instead.
+  /// If the [FluentCircleAvatar] is to have the user's initials, use [child] instead.
   final ImageProvider? backgroundImage;
 
   /// The foreground image of the circle.
@@ -135,6 +146,20 @@ class CircleAvatar extends StatelessWidget {
   /// [radius] to a [minRadius]/[maxRadius] pair or vice versa).
   final double? radius;
 
+  // add status indicator that shows users status
+  // if null then it will use normal layout else it will use stack to overlay status
+  // incicator
+  final UserAvatarStatus? userStatus;
+
+  // initials to display
+  // it we need string that has more then 2 charector to generate color from it
+  // if child is non null this has no effect
+  // TODO: add assertation for length
+  final String? initials;
+
+  // weather to auto genrate bg color or use default one
+  final bool? getBackgroundFromInitials;
+
   /// The minimum size of the avatar, expressed as the radius (half the
   /// diameter).
   ///
@@ -144,9 +169,9 @@ class CircleAvatar extends StatelessWidget {
   ///
   /// Constraint changes are animated, but size changes due to the environment
   /// itself changing are not. For example, changing the [minRadius] from 10 to
-  /// 20 when the [CircleAvatar] is in an unconstrained environment will cause
+  /// 20 when the [FluentCircleAvatar] is in an unconstrained environment will cause
   /// the avatar to animate from a 20 pixel diameter to a 40 pixel diameter.
-  /// However, if the [minRadius] is 40 and the [CircleAvatar] has a parent
+  /// However, if the [minRadius] is 40 and the [FluentCircleAvatar] has a parent
   /// [SizedBox] whose size changes instantaneously from 20 pixels to 40 pixels,
   /// the size will snap to 40 pixels instantly.
   final double? minRadius;
@@ -160,9 +185,9 @@ class CircleAvatar extends StatelessWidget {
   ///
   /// Constraint changes are animated, but size changes due to the environment
   /// itself changing are not. For example, changing the [maxRadius] from 10 to
-  /// 20 when the [CircleAvatar] is in an unconstrained environment will cause
+  /// 20 when the [FluentCircleAvatar] is in an unconstrained environment will cause
   /// the avatar to animate from a 20 pixel diameter to a 40 pixel diameter.
-  /// However, if the [maxRadius] is 40 and the [CircleAvatar] has a parent
+  /// However, if the [maxRadius] is 40 and the [FluentCircleAvatar] has a parent
   /// [SizedBox] whose size changes instantaneously from 20 pixels to 40 pixels,
   /// the size will snap to 40 pixels instantly.
   final double? maxRadius;
@@ -190,6 +215,52 @@ class CircleAvatar extends StatelessWidget {
     return 2.0 * (radius ?? maxRadius ?? _defaultMaxRadius);
   }
 
+  Color _getColorFromInitials(String? str) {
+    if (str != null) {
+      try {
+        var hash = _getIntFromInitials(str);
+        var r = (hash & 0xFF0000) >> 16;
+        var g = (hash & 0x00FF00) >> 8;
+        var b = hash & 0x0000FF;
+
+        var rr = r.toString();
+        var gg = g.toString();
+        var bb = b.toString();
+
+        return Color(int.parse('0xFF' + rr.substring(rr.length - 2) + gg.substring(gg.length - 2) + bb.substring(bb.length - 2)));
+      } catch (err) {
+        print('Error: String Must be greater than range 2\n'
+            '=========== hash string to hex ===========\n'
+            '            string length = ${str.length}');
+        // return err.toString();
+        return Color(0xffffffff);
+      }
+    } else {
+      return Color(0xffffffff);
+    }
+  }
+
+  int _getIntFromInitials(String str) {
+    int hash = 3000;
+
+    for (int i = 0; i < str.length; i++) {
+      hash = ((hash << 4) + hash) + str.codeUnitAt(i);
+    }
+    return hash;
+  }
+
+  _getDiagLength() {
+    double circleradius = (radius == null ? _defaultRadius : radius)!;
+    double centerX = circleradius;
+    double x = ((circleradius * math.cos((math.pi / 180) * 315))) + (centerX) - (_kStatusIndicatorHeight / 2);
+    return Offset(x, x);
+  }
+
+  _getPadding() {
+    bool shouldAddPadding = _getDiagLength().dx + _kStatusIndicatorHeight > (2 * (radius == null ? _defaultRadius : radius)!);
+    return shouldAddPadding ? (_kStatusIndicatorHeight / 2) + (radius == null ? _defaultRadius : radius)! : 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     assert(debugCheckHasMediaQuery(context));
@@ -197,13 +268,27 @@ class CircleAvatar extends StatelessWidget {
     TextStyle textStyle = theme.primaryTextTheme.subtitle1!.copyWith(color: foregroundColor);
     Color? effectiveBackgroundColor = backgroundColor;
     if (effectiveBackgroundColor == null) {
-      switch (ThemeData.estimateBrightnessForColor(textStyle.color!)) {
-        case Brightness.dark:
-          effectiveBackgroundColor = theme.primaryColorLight;
-          break;
-        case Brightness.light:
-          effectiveBackgroundColor = theme.primaryColorDark;
-          break;
+      if (getBackgroundFromInitials! && initials != null && initials!.length >= 2) {
+        Color colorfromInitials = _getColorFromInitials(initials);
+        switch (ThemeData.estimateBrightnessForColor(colorfromInitials)) {
+          case Brightness.dark:
+            textStyle = theme.primaryTextTheme.subtitle1!.copyWith(color: theme.primaryColorLight);
+            effectiveBackgroundColor = colorfromInitials;
+            break;
+          case Brightness.light:
+            textStyle = theme.primaryTextTheme.subtitle1!.copyWith(color: theme.primaryColorDark);
+            effectiveBackgroundColor = colorfromInitials;
+            break;
+        }
+      } else {
+        switch (ThemeData.estimateBrightnessForColor(textStyle.color!)) {
+          case Brightness.dark:
+            effectiveBackgroundColor = theme.primaryColorLight;
+            break;
+          case Brightness.light:
+            effectiveBackgroundColor = theme.primaryColorDark;
+            break;
+        }
       }
     } else if (foregroundColor == null) {
       switch (ThemeData.estimateBrightnessForColor(backgroundColor!)) {
@@ -215,53 +300,117 @@ class CircleAvatar extends StatelessWidget {
           break;
       }
     }
+
+    Color statusIndicatorColor = Color(0xffffffff);
+    if (userStatus != null) {
+      switch (userStatus!) {
+        case UserAvatarStatus.offline:
+          statusIndicatorColor = Color(0xff8a8886);
+          // TODO: Handle this case.
+          break;
+          statusIndicatorColor = Color(0xff);
+        case UserAvatarStatus.online:
+          statusIndicatorColor = Color(0xff6bb700);
+          // TODO: Handle this case.
+          break;
+        case UserAvatarStatus.bussy:
+          statusIndicatorColor = Color(0xffc50f1f);
+          // TODO: Handle this case.
+          break;
+        case UserAvatarStatus.away:
+          statusIndicatorColor = Color(0xffffaa44);
+          // TODO: Handle this case.
+          break;
+      }
+    }
+    Widget? initialWidget = child == null ? Text(initials!.substring(0, 1)) : null;
     final double minDiameter = _minDiameter;
     final double maxDiameter = _maxDiameter;
-    return AnimatedContainer(
-      constraints: BoxConstraints(
-        minHeight: minDiameter,
-        minWidth: minDiameter,
-        maxWidth: maxDiameter,
-        maxHeight: maxDiameter,
-      ),
-      duration: kThemeChangeDuration,
-      decoration: BoxDecoration(
-        color: effectiveBackgroundColor,
-        image: backgroundImage != null
-          ? DecorationImage(
-              image: backgroundImage!,
-              onError: onBackgroundImageError,
-              fit: BoxFit.cover,
-            )
-          : null,
-        shape: BoxShape.circle,
-      ),
-      foregroundDecoration: foregroundImage != null
-          ? BoxDecoration(
-              image: DecorationImage(
-                image: foregroundImage!,
-                onError: onForegroundImageError,
-                fit: BoxFit.cover,
+    return Padding(
+      padding: EdgeInsets.all(_getPadding()),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          AnimatedContainer(
+              constraints: BoxConstraints(
+                minHeight: minDiameter,
+                minWidth: minDiameter,
+                maxWidth: maxDiameter,
+                maxHeight: maxDiameter,
               ),
-              shape: BoxShape.circle,
-            )
-          : null,
-      child: child == null
-          ? null
-          : Center(
-              child: MediaQuery(
-                // Need to ignore the ambient textScaleFactor here so that the
-                // text doesn't escape the avatar when the textScaleFactor is large.
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: IconTheme(
-                  data: theme.iconTheme.copyWith(color: textStyle.color),
-                  child: DefaultTextStyle(
-                    style: textStyle,
-                    child: child!,
+              duration: kThemeChangeDuration,
+              decoration: BoxDecoration(
+                color: effectiveBackgroundColor,
+                image: backgroundImage != null
+                    ? DecorationImage(
+                        image: backgroundImage!,
+                        onError: onBackgroundImageError,
+                        fit: BoxFit.cover,
+                      )
+                    : null,
+                shape: BoxShape.circle,
+              ),
+              foregroundDecoration: foregroundImage != null
+                  ? BoxDecoration(
+                      image: DecorationImage(
+                        image: foregroundImage!,
+                        onError: onForegroundImageError,
+                        fit: BoxFit.cover,
+                      ),
+                      shape: BoxShape.circle,
+                    )
+                  : null,
+              child: child == null
+                  ? initialWidget == null
+                      ? null
+                      : Center(
+                        child: MediaQuery(
+                            // Need to ignore the ambient textScaleFactor here so that the
+                            // text doesn't escape the avatar when the textScaleFactor is large.
+                            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                            child: IconTheme(
+                              data: theme.iconTheme.copyWith(color: textStyle.color),
+                              child: DefaultTextStyle(
+                                style: textStyle.copyWith(color: Colors.white),
+                                child: initialWidget == null ? child! : initialWidget,
+                              ),
+                            ),
+                          ),
+                      )
+                  : Center(
+                      child: MediaQuery(
+                        // Need to ignore the ambient textScaleFactor here so that the
+                        // text doesn't escape the avatar when the textScaleFactor is large.
+                        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                        child: IconTheme(
+                          data: theme.iconTheme.copyWith(color: textStyle.color),
+                          child: DefaultTextStyle(
+                            style: textStyle.copyWith(color: Colors.white),
+                            child: initialWidget == null ? child! : initialWidget,
+                          ),
+                        ),
+                      ),
+                    )),
+          if (userStatus != null)
+            Positioned(
+                height: _kStatusIndicatorHeight,
+                width: _kStatusIndicatorHeight,
+                top: _getDiagLength().dx,
+                left: _getDiagLength().dy,
+                child: AnimatedContainer(
+                  height: _kStatusIndicatorHeight,
+                  width: _kStatusIndicatorHeight,
+                  decoration: BoxDecoration(
+                    color: statusIndicatorColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(width: _kStatusIndicatorBorderWidth, color: Color(0xffffffff))
                   ),
-                ),
-              ),
-            ),
+                  duration: kThemeChangeDuration,
+                )),
+        ],
+      ),
     );
   }
 }
+
+enum UserAvatarStatus { offline, online, bussy, away }
