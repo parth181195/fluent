@@ -258,7 +258,7 @@ class FluentCircleAvatar extends StatelessWidget {
 
   _getPadding() {
     bool shouldAddPadding = _getDiagLength().dx + _kStatusIndicatorHeight > (2 * (radius == null ? _defaultRadius : radius)!);
-    return shouldAddPadding ? (_kStatusIndicatorHeight / 2) + (radius == null ? _defaultRadius : radius)! : 0;
+    return shouldAddPadding ? (_kStatusIndicatorHeight / 2) + (radius == null ? _defaultRadius : radius)! : 0.0;
   }
 
   @override
